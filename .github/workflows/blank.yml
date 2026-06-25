@@ -1,16 +1,12 @@
 # .github/workflows/dau_alert.yml
-
 name: DAU Alert
-
 on:
   schedule:
     - cron: '0 6 * * *'   # runs every day at 6AM UTC (11:30AM IST)
   workflow_dispatch:        # also lets you trigger it manually from GitHub UI
-
 jobs:
   run-alert:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -23,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install google-analytics-data google-auth google-auth-oauthlib
-          pip install pandas numpy scipy statsmodels
+          pip install pandas numpy scipy statsmodels nbconvert
 
       - name: Write credentials from secrets
         run: |
@@ -31,8 +27,11 @@ jobs:
           echo '${{ secrets.CLIENT_SECRET_LOVE }}' > client_secret_luvkey.json
           echo '${{ secrets.EMAIL_CREDENTIAL_JSON }}' > email_credential.json
 
+      - name: Convert notebook to python
+        run: jupyter nbconvert --to script conncection_check.ipynb
+
       - name: Run DAU alert script
-        run: conncection_check.py
+        run: python conncection_check.py
 
       - name: Commit log file back to repo
         run: |
