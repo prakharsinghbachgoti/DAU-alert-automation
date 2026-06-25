@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install google-analytics-data google-auth google-auth-oauthlib
-          pip install pandas numpy scipy statsmodels nbconvert
+          pip install pandas numpy scipy statsmodels nbconvert nest-asyncio
 
       - name: Write credentials from secrets
         run: |
