@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install google-analytics-data google-auth google-auth-oauthlib
-          pip install pandas numpy scipy statsmodels nbconvert
+          pip install pandas numpy scipy statsmodels nbconvert nest-asyncio
 
       - name: Write credentials from secrets
         run: |
@@ -35,8 +35,17 @@ jobs:
 
       - name: Commit log file back to repo
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Stage the log file
           git add dau_log.json
-          git diff --staged --quiet || git commit -m "DAU log update $(date +'%Y-%m-%d')"
-          git push
+          
+          # Only commit and push if the file actually changed
+          if ! git diff --cached --quiet; then
+            git commit -m "DAU log update $(date +'%Y-%m-%d')"
+            # Push specifically to the active branch (e.g., main or master)
+            git push origin HEAD:${{ github.ref_name }}
+          else
+            echo "No changes detected in dau_log.json. Skipping push."
+          fi
